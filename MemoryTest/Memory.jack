@@ -1,0 +1,101 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * Memory operations library.
+ */ 
+class Memory {
+    static Array RAM;
+    static Array freeList;
+    static int LENGTH;
+    static int NEXT;
+    /** Initializes memory parameters. */
+    function void init() {
+        let RAM = 0;
+        let LENGTH = 1;
+        let NEXT = 0;
+        //freeList = heapBase
+        let freeList = 2048;
+        //freeList.length = heapLength
+        let freeList[LENGTH] = 16384 - 2048;
+        //freeList.next = null
+        let freeList[NEXT] = null;
+        return;
+    }
+
+    /** Returns the value of the main memory at the given address. */
+    function int peek(int address) {
+        return RAM[address];
+    }
+
+    /** Sets the value of the main memory at this address
+     *  to the given value. */
+    function void poke(int address, int value) {
+        let RAM[address] = value;
+        return;
+    }
+
+    function Array findBestFit(int size) {
+        var Array best,current,prev,bestPrev;
+        var int minSize;
+        let minSize = 16384 - 2048;
+        let prev = null;
+        let current = freeList;
+        let best = null;
+        while(~(current = null)){
+            //do Output.printInt(1);
+            if((current[LENGTH] > size ) & (~(current[LENGTH] > minSize))){
+                let minSize = current[LENGTH];
+                let best = current;
+                let bestPrev = prev;
+            }
+            let prev = current;
+            let current = current[NEXT];
+        }
+        
+        // out of memory
+        if((best = null) | (best[LENGTH] < (size + 1))){
+            return null;
+        }
+        if(best[LENGTH] = (size + 1)){
+             
+            //first segment of free list
+            if(bestPrev = null){
+                let freeList = best[NEXT];
+            } else {
+                //skip the current freelist segment
+                let bestPrev[NEXT] = best[NEXT];
+            }
+        } else {
+            // reduces the free space and moev the best segment to the end of the free space.
+            let best[LENGTH] = best[LENGTH] - size - 1;
+            let best = best +  best[LENGTH];
+        }
+
+        return best;
+    }
+
+    /** finds and allocates from the heap a memory block of the 
+     *  specified size and returns a reference to its base address. */
+    function int alloc(int size) {
+        var Array best;
+        let best = Memory.findBestFit(size);
+        if(best = null){
+            return null;
+        }
+        let best[0] = size;
+        return (best + 1);
+    }
+
+    /** De-allocates the given object and frees its space. */
+    function void deAlloc(int object) {
+        var int size;
+        let size = object[-1] + 1;
+        let object[NEXT] = freeList;
+        let object[LENGTH] = size;
+        return; 
+
+    }    
+}

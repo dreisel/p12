@@ -1,0 +1,132 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A basic math library.
+ */
+class Math {
+
+    static int bitArr;
+    /** Initializes the library. */
+    function void init() {
+        let bitArr = Array.new(16);
+        let bitArr[0]  = 1;      //0000000000000001
+        let bitArr[1]  = 2;      //0000000000000010
+        let bitArr[2]  = 4;      //0000000000000100
+        let bitArr[3]  = 8;      //0000000000001000
+        let bitArr[4]  = 16;     //0000000000010000
+        let bitArr[5]  = 32;     //0000000000100000
+        let bitArr[6]  = 64;     //0000000001000000
+        let bitArr[7]  = 128;    //0000000010000000
+        let bitArr[8]  = 256;    //0000000100000000
+        let bitArr[9]  = 512;    //0000001000000000
+        let bitArr[10] = 1024;   //0000010000000000
+        let bitArr[11] = 2048;   //0000100000000000
+        let bitArr[12] = 4096;   //0001000000000000
+        let bitArr[13] = 8192;   //0010000000000000
+        let bitArr[14] = 16384;  //0100000000000000
+        let bitArr[15] = 16384 + 16384; //1000000000000000
+        return;
+    }
+    function int getBit(int number, int bit){
+        if (number & bitArr[15]){
+            return 1;
+        } 
+        return 0;
+    }
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+        if(x < 0){
+            let x = -x;
+        } 
+        return x;
+    }
+
+    /** Returns the product of x and y. */
+    function int multiply(int x, int y) {
+        var int sum, shiftedX, j;
+        let sum = 0;
+        let shiftedX = x;
+        let j = 0;
+
+        while( j < 16 ) {
+            if(Math.getBit(y, j)) {
+                let sum = sum + shiftedX;
+            }
+            let shiftedX = shiftedX + shiftedX;
+            let j = j + 1;
+        }
+        return sum;
+    }
+
+    /** Returns the integer part of x/y. */
+    function int divide(int x, int y) {
+        var int q,absX,absY,res;
+        let absX = Math.abs(x);
+        let absY = Math.abs(y);
+        if(absX < absY) {
+            return 0;
+        }
+        let q = Math.divide(absX, (absY + absY) );
+        if ((x - (2 * q * y)) < y){
+            let res = (2 * q);
+        }
+        else {
+            let res = ((2 * q) + 1);
+        }
+        
+        if((x > 0 & y < 0) | (x < 0 & y > 0)){
+            return -res;
+        } else {
+            return res;
+        }
+    }
+    /*
+        sqrt (x):
+        y = 0
+        for j = n/2 - 1 ... 0 do
+        if (y + 2^j)^2 <=x then y = y + 2^j
+        return y
+    */
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+        var int y,j,temp;
+        let y = 0;
+        let j = 7;
+        while (j > -1) {
+            let temp = y + bitArr[j];
+            let temp = temp * temp;
+            if(~(temp > x)){
+                let y = y + bitArr[j];
+            }
+        }
+        return y;
+    }
+
+    function int pow(int x , int y){
+        var int res;
+        let res = 1;
+        while( y > 0){
+            let res = res * x;
+        }
+        return x;
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+        if ( a > b) {
+            return a;
+        }
+        return b;
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+        if ( a > b) {
+            return b;
+        }
+        return a;
+    }
+}
