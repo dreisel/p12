@@ -136,19 +136,15 @@ push constant 0
 return
 function Math.getBit 0
 push argument 0
-push constant 15
+push argument 1
 push static 0
 add
 pop pointer 1
 push that 0
 and
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 1
-return
-label IF_FALSE0
 push constant 0
+eq
+not
 return
 function Math.abs 0
 push argument 0
@@ -221,27 +217,29 @@ push local 2
 add
 call Math.divide 2
 pop local 0
-push argument 0
-push constant 2
+push local 1
 push local 0
+push local 2
 call Math.multiply 2
-push argument 1
+push local 0
+push local 2
 call Math.multiply 2
+add
 sub
-push argument 1
+push local 2
 lt
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
-push constant 2
 push local 0
-call Math.multiply 2
+push local 0
+add
 pop local 3
 goto IF_END1
 label IF_FALSE1
-push constant 2
 push local 0
-call Math.multiply 2
+push local 0
+add
 push constant 1
 add
 pop local 3
@@ -300,6 +298,11 @@ push local 2
 push argument 0
 gt
 not
+push local 2
+push constant 15
+call Math.getBit 2
+not
+and
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
@@ -312,6 +315,10 @@ push that 0
 add
 pop local 0
 label IF_FALSE0
+push local 1
+push constant 1
+sub
+pop local 1
 goto WHILE_EXP0
 label WHILE_END0
 push local 0
